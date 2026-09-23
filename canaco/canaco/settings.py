@@ -127,11 +127,14 @@ USE_TZ = True
 STATIC_URL = 'static/'
 staticfiles_dirs = [BASE_DIR / 'static']
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media' 
+
+LOGIN_URL = 'home:login'
+LOGIN_REDIRECT_URL = 'home:index'
+LOGOUT_REDIRECT_URL = 'home:login'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = 'home:login'
-LOGIN_REDIRECT_URL = 'home:index'
-LOGOUT_REDIRECT_URL = 'home:login'
