@@ -74,7 +74,7 @@ WSGI_APPLICATION = 'canaco.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'canaco',
@@ -83,11 +83,11 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
         'options': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'init_command': "SET names utf8mb4; Set sql_mode='STRICT_TRANS_TABLES'",
 'default_storage_engine': 'InnoDB',
         },
     }
-} 
+}"""
 
 
 # Password validation
@@ -125,7 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-staticfiles_dirs = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media' 
@@ -137,4 +137,3 @@ LOGOUT_REDIRECT_URL = 'home:login'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
