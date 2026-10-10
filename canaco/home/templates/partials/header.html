@@ -22,7 +22,7 @@
  <a href="#">Categoría</a>
  <ul class="dropdown">
  <li><a href="">Todas</a></li>
- <li><a href=""></a></li>
+ <li><a href="{% url 'home:categoria' %}">Tecnología</a></li>
  </ul>
  </li>
  <li><a href="">Perfil</a></li>
@@ -42,8 +42,8 @@ sesión</button>
  </div>
  {% else %}
  <div class="d-none d-lg-flex align-items-center justify-content-end gap-2">
- <a href="" class="text-white">Iniciar sesión</a>
- <a href="" class="btn btn-sm btn-outline-light">Registro</a>
+ <a href="{% url 'home:login' %}" class="text-white">Iniciar sesión</a>
+ <a href="{% url 'home:sign_up' %}" class="btn btn-sm btn-outline-light">Registro</a>
  </div>
  {% endif %}
  </div>
