@@ -10,7 +10,7 @@
  <div class="container">
  <div class="menu-bg-wrap">
  <div class="site-navigation">
- <a href="#" class="logo m-0">Canaco<span class="text-primary">.</span></a>
+ <a href="{% url 'home:index' %}" class="logo m-0">Canaco<span class="text-primary">.</span></a>
  <div class="site-navigation-center text-center">
  <form action="#" class="search-form d-inline-block d-lg-none">
  <input type="text" class="form-control" placeholder="Buscar...">
@@ -25,17 +25,18 @@
  <li><a href="{% url 'home:categoria' %}">Tecnología</a></li>
  </ul>
  </li>
- <li><a href="">Perfil</a></li>
+ <li><a href="{% url 'home:perfil' %}">Perfil</a></li>
  </ul>
  </div>
  <div class="site-navigation-actions">
- <a href="#" class="burger ms-auto site-menu-toggle js-menu-toggle d-inline-block dlg-none light">
+ <a href="#" class="burger ms-auto site-menu-toggle js-menu-toggle d-inline-block d-lg-none light">
  <span></span>
  </a>
  {% if request.user.is_authenticated %}
  <div class="d-none d-lg-flex align-items-center justify-content-end gap-2">
- <a href="" class="text-white"></a>
- <form method="post" action="">
+ <a href="{% url 'home:perfil' %}" class="text-white">Mi Perfil</a>
+ <form method="post" action="{% url 'home:logout' %}">
+ {% csrf_token %}
  <button type="submit" class="btn btn-sm btn-outline-light">Cerrar
 sesión</button>
  </form>
