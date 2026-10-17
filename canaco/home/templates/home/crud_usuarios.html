@@ -38,7 +38,7 @@
 <tr>
 <td>{{ forloop.counter }}</td>
 <td>{{ user.username }}</td>
-<td>{{ user.first_name|default:"-" }}</td>
+<td>{{ user.get_full_name|default:"-" }}</td>
 <td>{{ user.email|default:"-" }}</td>
 <td>
 {% if user.is_superuser %}
@@ -57,12 +57,15 @@ Colaborador
 {% endif %}
 </td>
 <td>
-<a href="{% url 'home:editar_usuario' user.id %}" class="btn btn-info btnsm">Editar</a>
+<a href="{% url 'home:editar_usuario' user.id %}" class="btn btn-info btn-sm">Editar</a>
 </td>
 <td>
-<a href="{% url 'home:bloquear_usuario' user.id %}" class="btn btn-warning btn-sm">
+<form method="post" action="{% url 'home:bloquear_usuario' user.id %}">
+{% csrf_token %}
+<button type="submit" class="btn btn-warning btn-sm">
 {% if user.is_active %}Bloquear{% else %}Desbloquear{% endif %}
-</a>
+</button>
+</form>
 </td>
 <td>
 <form method="post" action="{% url 'home:eliminar_usuario' user.id %}">

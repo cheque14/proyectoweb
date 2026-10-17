@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w75)1dnde^=71riy2=zj_tz8+9th4k^@vl5m4c#p8hq44ec%7)'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '[::1]']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 
 # Application definition
@@ -74,20 +79,20 @@ WSGI_APPLICATION = 'canaco.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'canaco',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'options': {
-            'init_command': "SET names utf8mb4; Set sql_mode='STRICT_TRANS_TABLES'",
-'default_storage_engine': 'InnoDB',
+        'NAME': os.environ.get('MYSQL_DATABASE', 'canaco'),
+        'USER': os.environ.get('MYSQL_USER', 'canaco'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'canaco123'),
+        'HOST': os.environ.get('MYSQL_HOST', 'localhost'),
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
     }
-}"""
+}
 
 
 # Password validation
