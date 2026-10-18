@@ -17,15 +17,19 @@
  <span class="bi-search"></span>
  </form>
  <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu mx-auto">
- <li class="active"><a href="">Inicio</a></li>
+ <li class="active"><a href="{% url 'home:index' %}">Inicio</a></li>
  <li class="has-children">
  <a href="#">Categoría</a>
  <ul class="dropdown">
- <li><a href="">Todas</a></li>
- <li><a href="{% url 'home:categoria' %}">Tecnología</a></li>
+ <li><a href="{% url 'home:categoria' %}">Todas</a></li>
+ {% for categoria in categorias_menu %}
+ <li><a href="{% url 'home:categoria' %}?categoria={{ categoria.id }}">{{ categoria.nombre }}</a></li>
+ {% endfor %}
  </ul>
  </li>
+ {% if request.user.is_authenticated %}
  <li><a href="{% url 'home:perfil' %}">Perfil</a></li>
+ {% endif %}
  </ul>
  </div>
  <div class="site-navigation-actions">

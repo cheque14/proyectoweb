@@ -1,85 +1,92 @@
 {% load static %}
- <footer class="site-footer">
- <div class="container">
- <div class="row">
- <div class="col-lg-4">
- <div class="widget">
- <h3 class="mb-4">Acerca de</h3>
- <p>Muy muy lejos, detrás de las montañas de palabras, lejos de los países Vokalia y
-Consonantia, viven los textos ciegos.</p>
- </div> <!-- /.widget -->
- <div class="widget">
- <h3>Redes Sociales</h3>
- <ul class="list-unstyled social">
- <li><a href="#"><span class="icon-instagram"></span></a></li>
- <li><a href="#"><span class="icon-twitter"></span></a></li>
- <li><a href="#"><span class="icon-facebook"></span></a></li>
- <li><a href="#"><span class="icon-linkedin"></span></a></li>
- <li><a href="#"><span class="icon-pinterest"></span></a></li>
- <li><a href="#"><span class="icon-dribbble"></span></a></li>
- </ul>
- </div> <!-- /.widget -->
- </div> <!-- /.col-lg-4 -->
- <div class="col-lg-4 ps-lg-5">
- <div class="widget">
- <h3 class="mb-4">Empresa</h3>
- <ul class="list-unstyled float-start links">
- <li><a href="#">Sobre nosotros</a></li>
- <li><a href="#">Servicios</a></li>
- <li><a href="#">Visión</a></li>
- <li><a href="#">Misión</a></li>
- <li><a href="#">Términos</a></li>
- <li><a href="#">Privacidad</a></li>
- </ul>
- <ul class="list-unstyled float-start links">
- <li><a href="#">Socios</a></li>
- <li><a href="#">Negocios</a></li>
- <li><a href="#">Empleos</a></li>
- <li><a href="#">Blog</a></li>
- <li><a href="#">Preguntas Frecuentes</a></li>
- <li><a href="#">Creativos</a></li>
- </ul>
- </div> <!-- /.widget -->
- </div> <!-- /.col-lg-4 -->
- <div class="col-lg-4">
- <div class="widget">
- <h3 class="mb-4">Entradas Recientes</h3>
- <div class="post-entry-footer">
- <ul>
- <li>
- <a href="">
- {% comment %} <img src="" alt="" class="me-4 rounded" style="width:
-70px; height: 70px; object-fit: cover;"> {% endcomment %}
- <img src="{% static 'images/img_1_sq.jpg' %}" alt="" class="me-4
-rounded" style="width: 70px; height: 70px; object-fit: cover;">
- <div class="text">
- <h4></h4>
- <div class="post-meta">
- <span class="mr-2"></span>
- </div>
- </div> 
- </a>
- </li>
- <li><span class="text-white-50">No hay noticias recientes.</span></li>
- </ul>
- </div>
- </div> <!-- /.widget -->
- </div> <!-- /.col-lg-4 -->
- </div> <!-- /.row -->
- <div class="row mt-5">
- <div class="col-12 text-center">
- <!--
- **==========
- NOTE:
- Please don't remove this copyright link unless you buy the license here
+<footer class="site-footer">
+<div class="container">
+<div class="row">
+<div class="col-lg-4">
+<div class="widget">
+<h3 class="mb-4">Acerca de</h3>
+<p>Muy muy lejos, detrás de las montañas de palabras, lejos
+de los países Vokalia y Consonantia, viven los textos ciegos.</p>
+</div> <!-- /.widget -->
+<div class="widget">
+<h3>Redes Sociales</h3>
+<ul class="list-unstyled social">
+<li><a href="#"><span class="iconinstagram"></span></a></li>
+<li><a href="#"><span class="icontwitter"></span></a></li>
+<li><a href="#"><span class="iconfacebook"></span></a></li>
+<li><a href="#"><span class="iconlinkedin"></span></a></li>
+<li><a href="#"><span class="iconpinterest"></span></a></li>
+<li><a href="#"><span class="icondribbble"></span></a></li>
+</ul>
+</div> <!-- /.widget -->
+</div> <!-- /.col-lg-4 -->
+<div class="col-lg-4 ps-lg-5">
+<div class="widget">
+<h3 class="mb-4">Empresa</h3>
+<ul class="list-unstyled float-start links">
+<li><a href="#">Sobre nosotros</a></li>
+<li><a href="#">Servicios</a></li>
+<li><a href="#">Visión</a></li>
+<li><a href="#">Misión</a></li>
+<li><a href="#">Términos</a></li>
+<li><a href="#">Privacidad</a></li>
+</ul>
+<ul class="list-unstyled float-start links">
+<li><a href="#">Socios</a></li>
+<li><a href="#">Negocios</a></li>
+<li><a href="#">Empleos</a></li>
+<li><a href="#">Blog</a></li>
+<li><a href="#">Preguntas Frecuentes</a></li>
+<li><a href="#">Creativos</a></li>
+</ul>
+</div> <!-- /.widget -->
+</div> <!-- /.col-lg-4 -->
+<div class="col-lg-4">
+<div class="widget">
+<h3 class="mb-4">Entradas Recientes</h3>
+<div class="post-entry-footer">
+<ul>
+{% for noticia in global_recientes %}
+<li>
+<a href="{% url 'home:noticia_detalle' noticia.id %}">
+{% if noticia.imagen_portada %}
+<img src="{{ noticia.imagen_portada.display_url }}" alt="{{ noticia.titulo }}" class="me-4 rounded" style="width: 70px; height: 70px; object-fit: cover;">
+{% else %}
+<img src="{% static 'images/img_1_sq.jpg' %}" alt="{{ noticia.titulo }}" class="me-4 rounded" style="width: 70px; height: 70px; object-fit: cover;">
+{% endif %}
+<div class="text">
+<h4>{{ noticia.titulo }}</h4>
+<div class="post-meta">
+<span class="mr-2">{{ noticia.createdat|date:"d M, Y" }}</span>
+</div>
+</div>
+</a>
+</li>
+{% empty %}
+<li><span class="text-white-50">No hay noticias
+recientes.</span></li>
+{% endfor %}
+</ul>
+</div>
+</div> <!-- /.widget -->
+</div> <!-- /.col-lg-4 -->
+</div> <!-- /.row -->
+<div class="row mt-5">
+<div class="col-12 text-center">
+<!--
+**==========
+NOTE:
+Please don't remove this copyright link unless you buy the license here
 https://untree.co/license/
- **==========
- -->
- <p>Copyright &copy;<script>document.write(new Date().getFullYear());</script>. Todos los derechos
-reservados. &mdash; Diseñado con amor por <a href="https://untree.co">Untree.co</a> Distribuido por <a
-href="https://themewagon.com">ThemeWagon</a> <!-- License information: https://untree.co/license/ -->
- </p>
- </div>
- </div>
- </div> <!-- /.container -->
- </footer> <!-- /.site-footer --> 
+**==========
+-->
+<p>Copyright &copy;<script>document.write(new
+Date().getFullYear());</script>. Todos los derechos reservados. &mdash; Diseñado con
+amor por <a href="https://untree.co">Untree.co</a> Distribuido por <a
+href="https://themewagon.com">ThemeWagon</a> <!-- License information:
+https://untree.co/license/ -->
+</p>
+</div>
+</div>
+</div> <!-- /.container -->
+</footer> <!-- /.site-footer -->

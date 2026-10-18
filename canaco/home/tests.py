@@ -19,18 +19,26 @@ class LoginRequiredViewTests(SimpleTestCase):
             'home:editar_usuario': '/crud/usuarios/1/editar/',
             'home:bloquear_usuario': '/crud/usuarios/1/estado/',
             'home:eliminar_usuario': '/crud/usuarios/1/eliminar/',
+            'home:editar_categoria': '/crud/categorias/1/editar/',
+            'home:eliminar_categoria': '/crud/categorias/1/eliminar/',
+            'home:noticia_detalle': '/noticia/1/',
+            'home:categoria_detalle': '/categoria/1/',
+            'home:editar_publicacion': '/crud/noticias/1/editar/',
+            'home:publicar_publicacion': '/crud/noticias/1/publicar/',
+            'home:eliminar_publicacion': '/crud/noticias/1/eliminar/',
+            'home:aprobar_comentario': '/crud/comentarios/1/aprobar/',
+            'home:bloquear_comentario': '/crud/comentarios/1/bloquear/',
+            'home:eliminar_comentario': '/crud/comentarios/1/eliminar/',
         }
 
         for route_name, expected_path in routes.items():
             with self.subTest(route=route_name):
-                args = (1,) if route_name != 'home:crear_usuario' else ()
+                args = () if route_name == 'home:crear_usuario' else (1,)
                 self.assertEqual(reverse(route_name, args=args), expected_path)
 
     def test_private_views_redirect_anonymous_users_to_login(self):
         protected_views = (
             ("/perfil/", "perfil"),
-            ("/noticia/", "noticia"),
-            ("/categoria/", "categoria"),
             ("/contactanos/", "contactanos"),
             ("/crear-publicacion/", "crear_publicacion"),
             ("/crear-usuario/", "crear_usuario"),
@@ -40,7 +48,7 @@ class LoginRequiredViewTests(SimpleTestCase):
             ("/crud/noticias/", "crud_noticias"),
             ("/crud/perfil/", "crud_perfil"),
             ("/crud/usuarios/", "crud_usuarios"),
-            ("/editar-categoria/", "editar_categoria"),
+            ("/crud/categorias/1/editar/", "editar_categoria"),
         )
 
         for path, view_name in protected_views:
@@ -114,7 +122,12 @@ class SignupViewTests(SimpleTestCase):
 
     @patch('home.views.User.objects.filter')
     @patch('home.views.User.objects.create_user')
-    def test_signup_rejects_mismatched_passwords(self, create_user, filter_users):
+    @patch('home.context_processors.Categoria.objects.order_by', return_value=[])
+    @patch('home.context_processors.Publicacion.objects.filter')
+    def test_signup_rejects_mismatched_passwords(
+        self, recent_publications, _menu_categories, create_user, filter_users
+    ):
+        recent_publications.return_value.select_related.return_value.order_by.return_value = []
         filter_users.return_value.exists.return_value = False
         request = self.make_post_request('FirstPassword_987!', 'OtherPassword_987!')
 

@@ -37,16 +37,20 @@
 <td>{{ noticia.updatedat|date:"Y-m-d" }}</td>
 <td>{{ noticia.visitas }}</td>
 <td>
-{% if noticia.publicada %}
+{% if noticia.estado == 'publicado' %}
 <span class="badge bg-success">Publicado</span>
 {% else %}
 <span class="badge bg-warning text-dark">Borrador</span>
 {% endif %}
 </td>
-<td><a href="{% url 'home:noticia_detalle' noticia.id %}" class="btn btn-warning btnsm">Ver</a></td>
-<td><a href="{% url 'home:editar_publicacion' noticia.id %}" class="btn btn-info btnsm">Editar</a></td>
-<td><a href="{% url 'home:publicar_publicacion' noticia.id %}" class="btn btn-success
-btn-sm">{% if noticia.publicada %}Ocultar{% else %}Publicar{% endif %}</a></td>
+<td><a href="{% url 'home:noticia_detalle' noticia.id %}" class="btn btn-warning btn-sm">Ver</a></td>
+<td><a href="{% url 'home:editar_publicacion' noticia.id %}" class="btn btn-info btn-sm">Editar</a></td>
+<td>
+<form method="post" action="{% url 'home:publicar_publicacion' noticia.id %}">
+{% csrf_token %}
+<button type="submit" class="btn btn-success btn-sm">{% if noticia.estado == 'publicado' %}Ocultar{% else %}Publicar{% endif %}</button>
+</form>
+</td>
 <td>
 <form method="post" action="{% url 'home:eliminar_publicacion' noticia.id %}">
 {% csrf_token %}

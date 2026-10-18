@@ -32,10 +32,18 @@
 <span class="badge bg-warning text-dark">Pendiente</span>
 {% endif %}
 </td>
-<td><a href="{% url 'home:aprobar_comentario' comentario.id %}" class="btn btn-success
-btn-sm">Aprobar</a></td>
-<td><a href="{% url 'home:bloquear_comentario' comentario.id %}" class="btn btn-warning
-btn-sm">Bloquear</a></td>
+<td>
+<form method="post" action="{% url 'home:aprobar_comentario' comentario.id %}">
+{% csrf_token %}
+<button type="submit" class="btn btn-success btn-sm">Aprobar</button>
+</form>
+</td>
+<td>
+<form method="post" action="{% url 'home:bloquear_comentario' comentario.id %}">
+{% csrf_token %}
+<button type="submit" class="btn btn-warning btn-sm">Bloquear</button>
+</form>
+</td>
 <td>
 <form method="post" action="{% url 'home:eliminar_comentario' comentario.id %}">
 {% csrf_token %}
