@@ -1,0 +1,45 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: canaco-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-canaco}
+      MYSQL_USER: ${MYSQL_USER:-canaco}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-canaco123}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  web:
+    build: .
+    container_name: canaco-web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key}
+      DEBUG: ${DEBUG:-True}
+      MYSQL_HOST: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-canaco}
+      MYSQL_USER: ${MYSQL_USER:-canaco}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-canaco123}
+      MYSQL_PORT: 3306
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "python canaco/manage.py migrate &&
+             python canaco/manage.py runserver 0.0.0.0:8000"
+
+volumes:
+  mysql_data:
