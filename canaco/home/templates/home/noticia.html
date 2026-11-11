@@ -1,117 +1,90 @@
 {% extends 'partials/base.html' %}
 {% load static %}
-{% block title %}{{ publicacion.titulo }}{% endblock %}
+{% block title %}{{ publicacion.titulo }} | Canaco{% endblock %}
 {% block content %}
-<section class="section">
-<div class="container">
-{% if messages %}
-{% for message in messages %}
-<div class="alert alert-{{ message.tags }} alert-dismissible fade show"
-role="alert">
-{{ message }}
-<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-</div>
-{% endfor %}
-{% endif %}
-<div class="row blog-entries">
-<div class="col-md-12 col-lg-8 main-content">
-<h1 class="mb-4">{{ publicacion.titulo }}</h1>
-{% if publicacion.imagen_portada %}
-<img src="{{ publicacion.imagen_portada.display_url }}" alt="{{ publicacion.titulo }}" class="img-fluid rounded mb-4 publication-cover-image" style="max-height: 500px; width: 100%; object-fit: cover; object-position: center;">
-{% endif %}
-<div class="post-meta mb-4">
-<span>{{ publicacion.createdat|date:"d M Y H:i" }}</span>
-<span>&nbsp;-&nbsp;{% if publicacion.categoria %}{{ publicacion.categoria.nombre }}{% else %}Sin categoría{% endif %}</span>
-<span>&nbsp;-&nbsp;Visitas {{ publicacion.visitas }}</span>
-</div>
-<h3>Resumen de la noticia</h3>
-<p>{{ publicacion.resumen }}</p>
-<h3>Noticia</h3>
-<div class="post-content-body">
-{{ publicacion.contenido|safe }}
-</div>
-<h3 class="mt-5">Galería</h3>
-<div class="row my-4">
-{% for imagen in publicacion.galeria.all %}
-<div class="col-md-4 mb-4">
-<img src="{{ imagen.archivo.display_url }}" alt="Galería" class="img-fluid rounded publication-gallery-image" style="height: 250px; width: 100%; object-fit: cover; object-position: center;">
-</div>
-{% empty %}
-<div class="col-12"><p>Sin imágenes en galería.</p></div>
-{% endfor %}
-</div>
-<div class="pt-4 comment-wrap">
-<h3 class="mb-4">Comentarios</h3>
-{% for comentario in comentarios %}
-<div class="comment-card">
-<div class="comment-card-meta">
-<strong>{{ comentario.user.username }}</strong>
-<time datetime="{{ comentario.createdat|date:'c' }}">{{ comentario.createdat|date:"d M Y, H:i" }}</time>
-</div>
-<p>{{ comentario.contenido }}</p>
-</div>
-{% empty %}
-<p>No hay comentarios aprobados todavía.</p>
-{% endfor %}
-{% if request.user.is_authenticated %}
-<form method="POST" class="mt-4">
-{% csrf_token %}
-<div class="mb-3">
-<label for="contenido" class="form-label">Agregar comentario</label>
-<textarea name="contenido" id="contenido" rows="4" class="form-control" required></textarea>
-</div>
-<button type="submit" class="btn btn-primary">Agregar
-comentario</button>
-</form>
-{% else %}
-<a href="{% url 'home:login' %}" class="btn btn-primary mt-3">Inicia sesión
-para comentar</a>
-{% endif %}
-</div>
-</div>
-<div class="col-md-12 col-lg-4 sidebar">
-<div class="sidebar-box article-sidebar-card">
-<div class="article-sidebar-heading">
-<span class="article-sidebar-icon"><i class="bi bi-newspaper"></i></span>
-<div><h3>Otras noticias</h3><p>También te puede interesar</p></div>
-</div>
-<div class="post-entry-sidebar">
-<ul>
-{% for noticia in recientes %}
-<li>
-<a href="{% url 'home:noticia_detalle' noticia.id %}">
-{% if noticia.imagen_portada %}
-<img src="{{ noticia.imagen_portada.display_url }}" alt="{{ noticia.titulo }}" class="me-4 rounded sidebar-post-image" style="width: 70px; height: 70px; object-fit: cover; object-position: center;">
-{% else %}
-<img src="{% static 'images/hero_1.jpg' %}" alt="{{ noticia.titulo }}" class="me-4 rounded sidebar-post-image" style="width: 70px; height: 70px; object-fit: cover; object-position: center;">
-{% endif %}
-<div class="text">
-<h4>{{ noticia.titulo }}</h4>
-<div class="post-meta"><span><i class="bi bi-calendar3 me-1"></i>{{ noticia.createdat|date:"d M Y" }}</span></div>
-</div>
-</a>
-</li>
-{% empty %}
-<li class="sidebar-empty">Aún no hay otras noticias publicadas.</li>
-{% endfor %}
-</ul>
-</div>
-</div>
-<div class="sidebar-box article-sidebar-card">
-<div class="article-sidebar-heading">
-<span class="article-sidebar-icon"><i class="bi bi-grid"></i></span>
-<div><h3>Categorías</h3><p>Explora por tema</p></div>
-</div>
-<ul class="categories">
-{% for categoria in categorias %}
-<li><a href="{% url 'home:categoria_detalle' categoria.id %}"><span class="category-link-name">{{ categoria.nombre }}</span><i class="bi bi-arrow-up-right"></i></a></li>
-{% empty %}
-<li class="sidebar-empty">Aún no hay categorías.</li>
-{% endfor %}
-</ul>
-</div>
-</div>
-</div>
-</div>
-</section>
+<main class="article-page">
+  <div class="container article-container">
+    {% if messages %}
+    <div class="article-messages">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="article-breadcrumb"><a href="{% url 'home:index' %}">Inicio</a><i class="bi bi-chevron-right"></i><a href="{% url 'home:categoria' %}">Noticias</a><i class="bi bi-chevron-right"></i><span>{{ publicacion.categoria.nombre|default:"Comunidad" }}</span></div>
+    <header class="article-header">
+      <span class="eyebrow">{{ publicacion.categoria.nombre|default:"COMUNIDAD CANACO" }}</span>
+      <h1>{{ publicacion.titulo }}</h1>
+      <p class="article-deck">{{ publicacion.resumen }}</p>
+      <div class="article-byline">
+        <span class="byline-avatar"><i class="bi bi-buildings"></i></span>
+        <span><strong>{% if publicacion.autor %}{{ publicacion.autor.get_full_name|default:publicacion.autor.username }}{% else %}Canaco{% endif %}</strong><small>{{ publicacion.createdat|date:"d M Y · H:i" }}</small></span>
+        <span class="article-views"><i class="bi bi-eye"></i> {{ publicacion.visitas }} visitas</span>
+      </div>
+    </header>
+    {% if publicacion.imagen_portada %}
+    <figure class="article-cover"><img src="{{ publicacion.imagen_portada.display_url }}" alt="{{ publicacion.titulo }}"><figcaption>{{ publicacion.categoria.nombre|default:"Canaco" }} · Actualidad empresarial</figcaption></figure>
+    {% endif %}
+
+    <div class="article-layout">
+      <article class="article-content">
+        <div class="article-prose">
+          {{ publicacion.contenido|safe }}
+        </div>
+        {% if publicacion.galeria.all %}
+        <section class="article-gallery">
+          <div class="article-section-heading"><span class="eyebrow">EN IMÁGENES</span><h2>Galería</h2></div>
+          <div class="gallery-grid">
+            {% for imagen in publicacion.galeria.all %}
+            <img src="{{ imagen.archivo.display_url }}" alt="Imagen de {{ publicacion.titulo }}" loading="lazy">
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+        <section class="comments-section">
+          <div class="article-section-heading"><span class="eyebrow">CONVERSACIÓN</span><h2>Comentarios <span>({{ comentarios|length }})</span></h2></div>
+          {% for comentario in comentarios %}
+          <div class="comment-card">
+            <div class="comment-card-meta"><strong>{{ comentario.user.username }}</strong><time datetime="{{ comentario.createdat|date:'c' }}">{{ comentario.createdat|date:"d M Y, H:i" }}</time></div>
+            <p>{{ comentario.contenido }}</p>
+          </div>
+          {% empty %}
+          <p class="comments-empty">Sé la primera persona en compartir una idea.</p>
+          {% endfor %}
+          {% if request.user.is_authenticated %}
+          <form method="POST" class="comment-form">
+            {% csrf_token %}
+            <label for="contenido">Deja tu comentario</label>
+            <textarea name="contenido" id="contenido" rows="4" class="form-control" placeholder="¿Qué opinas sobre esta noticia?" required></textarea>
+            <button type="submit" class="button-dark">Publicar comentario <i class="bi bi-arrow-up-right"></i></button>
+          </form>
+          {% else %}
+          <div class="comment-signin"><span>¿Quieres participar en la conversación?</span><a href="{% url 'home:login' %}">Inicia sesión para comentar <i class="bi bi-arrow-right"></i></a></div>
+          {% endif %}
+        </section>
+      </article>
+      <aside class="article-sidebar">
+        <section class="article-sidebar-card">
+          <div class="article-sidebar-heading"><span class="eyebrow">PARA SEGUIR LEYENDO</span><h2>Más historias</h2></div>
+          {% for noticia in recientes %}
+          <a class="related-story" href="{% url 'home:noticia_detalle' noticia.id %}">
+            {% if noticia.imagen_portada %}<img src="{{ noticia.imagen_portada.display_url }}" alt="" loading="lazy">{% else %}<img src="{% static 'images/hero_1.jpg' %}" alt="" loading="lazy">{% endif %}
+            <span><small>{{ noticia.createdat|date:"d M Y" }}</small><strong>{{ noticia.titulo }}</strong></span>
+          </a>
+          {% empty %}<p class="sidebar-empty">Pronto encontrarás más noticias aquí.</p>{% endfor %}
+          <a class="sidebar-all-link" href="{% url 'home:categoria' %}">Todas las noticias <i class="bi bi-arrow-right"></i></a>
+        </section>
+        <section class="article-sidebar-card category-sidebar">
+          <div class="article-sidebar-heading"><span class="eyebrow">DESCUBRE</span><h2>Temas</h2></div>
+          {% for categoria in categorias %}
+          <a class="topic-link" href="{% url 'home:categoria_detalle' categoria.id %}">{{ categoria.nombre }} <i class="bi bi-arrow-up-right"></i></a>
+          {% empty %}<p class="sidebar-empty">Las categorías aparecerán aquí.</p>{% endfor %}
+        </section>
+      </aside>
+    </div>
+  </div>
+</main>
 {% endblock content %}

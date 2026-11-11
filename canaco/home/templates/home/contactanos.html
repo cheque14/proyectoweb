@@ -1,11 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends 'partials/base.html' %}
+{% block title %}Canaco cerca de ti{% endblock %}
+{% block content %}
+<main class="contact-page">
+  <section class="contact-hero">
+    <div class="container">
+      <span class="eyebrow">CANACO · EN COMUNIDAD</span>
+      <h1>Las conexiones<br>empiezan con una <em>idea.</em></h1>
+      <p>Este espacio reúne noticias y conversaciones para mantenerte cerca de lo que sucede en nuestra comunidad empresarial.</p>
+      <a href="{% url 'home:categoria' %}" class="button-dark">Descubrir noticias <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    <span class="contact-hero-mark"><i class="bi bi-chat-square-heart"></i></span>
+  </section>
+  <section class="contact-links-section">
+    <div class="container">
+      <div class="contact-links-heading"><span class="eyebrow">TU ESPACIO EN CANACO</span><h2>Participa a tu manera.</h2></div>
+      <div class="contact-links-grid">
+        <a href="{% url 'home:categoria' %}" class="contact-link-card">
+          <span class="contact-link-icon"><i class="bi bi-journal-richtext"></i></span>
+          <small>01 / INFORMACIÓN</small>
+          <strong>Lee las últimas noticias</strong>
+          <span>Conoce las ideas y novedades que comparte la comunidad. <i class="bi bi-arrow-up-right"></i></span>
+        </a>
+        <a href="{% url 'home:perfil' %}" class="contact-link-card">
+          <span class="contact-link-icon"><i class="bi bi-person-lines-fill"></i></span>
+          <small>02 / TU CUENTA</small>
+          <strong>Actualiza tu perfil</strong>
+          <span>Mantén tus datos y preferencias al día. <i class="bi bi-arrow-up-right"></i></span>
+        </a>
+        <a href="{% url 'home:index' %}" class="contact-link-card">
+          <span class="contact-link-icon"><i class="bi bi-chat-left-text"></i></span>
+          <small>03 / CONVERSACIÓN</small>
+          <strong>Comparte tu perspectiva</strong>
+          <span>Inicia sesión y participa en los comentarios de las noticias. <i class="bi bi-arrow-up-right"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock content %}

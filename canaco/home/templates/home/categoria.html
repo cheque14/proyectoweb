@@ -1,46 +1,57 @@
 {% extends 'partials/base.html' %}
 {% load static %}
-{% block title %}{% if categoria_seleccionada %}{{ categoria_seleccionada.nombre }}{% else %}Categorías{% endif %}{% endblock %}
+{% block title %}{% if categoria_seleccionada %}{{ categoria_seleccionada.nombre }}{% else %}Noticias{% endif %} | Canaco{% endblock %}
 {% block content %}
-<section class="section">
-  <div class="container">
-    <div class="row mb-4 align-items-center">
-      <div class="col-lg-5">
-        <h2 class="posts-entry-title">
-          {% if categoria_seleccionada %}{{ categoria_seleccionada.nombre }}{% else %}Todas las categorías{% endif %}
-        </h2>
-      </div>
-      <div class="col-lg-7">
-        <div class="d-flex flex-wrap gap-2">
-          <a class="btn btn-sm {% if not categoria_seleccionada %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'home:categoria' %}">Todas</a>
-          {% for categoria in categorias %}
-            <a class="btn btn-sm {% if categoria_seleccionada.id == categoria.id %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'home:categoria_detalle' categoria.id %}">{{ categoria.nombre }}</a>
-          {% endfor %}
+<main class="listing-page">
+  <section class="listing-heading">
+    <div class="container">
+      <div class="eyebrow"><span>CANACO / ACTUALIDAD</span></div>
+      <div class="listing-heading-row">
+        <div>
+          <h1>{% if categoria_seleccionada %}{{ categoria_seleccionada.nombre }}{% else %}Ideas en movimiento<span>.</span>{% endif %}</h1>
+          <p>Perspectivas, iniciativas y noticias de nuestra comunidad empresarial.</p>
         </div>
+        <span class="listing-count"><strong>{{ publicaciones|length|stringformat:"02d" }}</strong> HISTORIAS</span>
+      </div>
+      <nav class="category-filter" aria-label="Filtrar por categoría">
+        <a class="{% if not categoria_seleccionada %}active{% endif %}" href="{% url 'home:categoria' %}">Todas</a>
+        {% for categoria in categorias %}
+        <a class="{% if categoria_seleccionada.id == categoria.id %}active{% endif %}" href="{% url 'home:categoria_detalle' categoria.id %}">{{ categoria.nombre }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+  </section>
+
+  <section class="listing-content">
+    <div class="container">
+      <div class="listing-grid">
+        {% for publicacion in publicaciones %}
+        <article class="story-card">
+          <a class="story-card-image" href="{% url 'home:noticia_detalle' publicacion.id %}">
+            {% if publicacion.imagen_portada %}
+            <img src="{{ publicacion.imagen_portada.display_url }}" alt="{{ publicacion.titulo }}" loading="lazy">
+            {% else %}
+            <img src="{% static 'images/hero_1.jpg' %}" alt="{{ publicacion.titulo }}" loading="lazy">
+            {% endif %}
+            <span class="story-card-arrow"><i class="bi bi-arrow-up-right"></i></span>
+          </a>
+          <div class="story-card-body">
+            <div class="story-card-meta"><span>{{ publicacion.categoria.nombre|default:"Comunidad" }}</span><span>{{ publicacion.createdat|date:"d M Y" }}</span></div>
+            <h2><a href="{% url 'home:noticia_detalle' publicacion.id %}">{{ publicacion.titulo }}</a></h2>
+            <p>{{ publicacion.resumen|truncatewords:26 }}</p>
+            <a class="story-read-more" href="{% url 'home:noticia_detalle' publicacion.id %}">Leer noticia <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </article>
+        {% empty %}
+        <div class="listing-empty">
+          <span><i class="bi bi-journal-bookmark"></i></span>
+          <h2>Aún no hay historias por aquí</h2>
+          <p>Cuando publiquemos noticias en esta sección, podrás encontrarlas aquí.</p>
+          {% if categoria_seleccionada %}<a class="text-link" href="{% url 'home:categoria' %}">Ver todas las noticias <i class="bi bi-arrow-right"></i></a>{% endif %}
+        </div>
+        {% endfor %}
       </div>
     </div>
-
-    {% for publicacion in publicaciones %}
-      <div class="row mb-5 align-items-center">
-        <div class="col-lg-3">
-          <a href="{% url 'home:noticia_detalle' publicacion.id %}" class="img-link">
-            {% if publicacion.imagen_portada %}
-              <img src="{{ publicacion.imagen_portada.display_url }}" alt="{{ publicacion.titulo }}" class="img-fluid category-post-image">
-            {% else %}
-              <img src="{% static 'images/hero_1.jpg' %}" alt="{{ publicacion.titulo }}" class="img-fluid category-post-image">
-            {% endif %}
-          </a>
-        </div>
-        <div class="col-lg-8">
-          <span class="date">{{ publicacion.createdat|date:"d/m/Y" }} &bullet; {{ publicacion.categoria.nombre|default:"Sin categoría" }}</span>
-          <h2><a href="{% url 'home:noticia_detalle' publicacion.id %}">{{ publicacion.titulo }}</a></h2>
-          <p>{{ publicacion.resumen }}</p>
-          <p><a href="{% url 'home:noticia_detalle' publicacion.id %}" class="btn btn-sm btn-outline-primary">Leer más</a></p>
-        </div>
-      </div>
-    {% empty %}
-      <p>No hay noticias para esta categoría.</p>
-    {% endfor %}
-  </div>
-</section>
+  </section>
+</main>
 {% endblock content %}

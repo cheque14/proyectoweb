@@ -26,10 +26,29 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '[::1]']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,0.0.0.0,[::1],9.160.39.66,'
+        'canacoweb.belgiumcentral.cloudapp.azure.com,'
+        'www.canacoweb.belgiumcentral.cloudapp.azure.com',
+    ).split(',')
+    if host.strip()
+]
+
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
+    origin.strip()
+    for origin in os.environ.get(
+        'CSRF_TRUSTED_ORIGINS',
+        'http://localhost:8000,http://127.0.0.1:8000,'
+        'http://9.160.39.66,'
+        'http://canacoweb.belgiumcentral.cloudapp.azure.com,'
+        'http://www.canacoweb.belgiumcentral.cloudapp.azure.com,'
+        'https://canacoweb.belgiumcentral.cloudapp.azure.com,'
+        'https://www.canacoweb.belgiumcentral.cloudapp.azure.com',
+    ).split(',')
+    if origin.strip()
 ]
 
 
@@ -130,11 +149,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media' 
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 LOGIN_URL = 'home:login'
 LOGIN_REDIRECT_URL = 'home:index'

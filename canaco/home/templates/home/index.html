@@ -1,91 +1,122 @@
 {% extends 'partials/base.html' %}
 {% load static %}
-{% block title %}Inicio{% endblock %}
+{% block title %}Canaco | Comunidad empresarial{% endblock %}
 {% block content %}
-{% if slider %}
-<section class="home-carousel-section bg-light">
-  <div id="homeCarousel" class="carousel slide home-carousel" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      {% for noticia in slider %}
-        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}" aria-label="Noticia {{ forloop.counter }}"></button>
-      {% endfor %}
-    </div>
-    <div class="carousel-inner">
-      {% for noticia in slider %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="4500">
-          <a href="{% url 'home:noticia_detalle' noticia.id %}" class="home-carousel-link">
-            {% if noticia.imagen_portada %}
-              <img src="{{ noticia.imagen_portada.display_url }}" class="d-block w-100 home-carousel-image" style="height: 400px; object-fit: cover; object-position: center;" alt="{{ noticia.titulo }}">
-            {% else %}
-              <img src="{% static 'images/hero_1.jpg' %}" class="d-block w-100 home-carousel-image" style="height: 400px; object-fit: cover; object-position: center;" alt="{{ noticia.titulo }}">
-            {% endif %}
-            <div class="carousel-caption home-carousel-caption text-start">
-              <span>{{ noticia.createdat|date:"d M Y" }}</span>
-              <h2>{{ noticia.titulo }}</h2>
-              <p>{{ noticia.resumen|truncatewords:20 }}</p>
-            </div>
-          </a>
-        </div>
-      {% endfor %}
-    </div>
-    {% if slider|length > 1 %}
-      <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Anterior</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Siguiente</span>
-      </button>
-    {% endif %}
-  </div>
-</section>
-{% else %}
-<section class="home-carousel-section bg-light">
-  <div class="container py-5 text-center">
-    <h1>Bienvenido a Canaco</h1>
-    <p>Aún no hay noticias publicadas.</p>
-  </div>
-</section>
-{% endif %}
-
-<section class="section recent-news-section">
-  <div class="container">
-    <div class="row mb-4 justify-content-center">
-      <div class="col-lg-8 text-center">
-        <h2 class="posts-entry-title">Noticias recientes</h2>
-        <a href="{% url 'home:categoria' %}" class="read-more">Ver todas</a>
+<main>
+  <section class="home-intro">
+    <div class="container">
+      <div class="intro-line"><span>ACTUALIDAD EMPRESARIAL</span><span class="intro-line-rule"></span><span>IDEAS QUE IMPULSAN</span></div>
+      <div class="home-heading">
+        <h1>Lo que mueve<br> a <em>nuestra comunidad.</em></h1>
+        <p>Noticias, historias y nuevas perspectivas para quienes hacen crecer los negocios de nuestra región.</p>
       </div>
     </div>
-    <div class="row justify-content-center">
-      {% for publicacion in publicaciones %}
-        <div class="col-lg-4 mb-4">
-          <div class="post-entry-alt">
-            <a href="{% url 'home:noticia_detalle' publicacion.id %}" class="img-link">
-              {% if publicacion.imagen_portada %}
-                <img src="{{ publicacion.imagen_portada.display_url }}" alt="{{ publicacion.titulo }}" class="img-fluid publication-card-image" style="height: 200px; width: 100%; object-fit: cover; object-position: center;">
-              {% else %}
-                <img src="{% static 'images/img_1_horizontal.jpg' %}" alt="{{ publicacion.titulo }}" class="img-fluid publication-card-image" style="height: 200px; width: 100%; object-fit: cover; object-position: center;">
-              {% endif %}
+  </section>
+
+  {% if slider %}
+  <section class="featured-section">
+    <div class="container">
+      <div class="featured-layout">
+        {% with noticia=slider.0 %}
+        <a class="featured-story" href="{% url 'home:noticia_detalle' noticia.id %}">
+          {% if noticia.imagen_portada %}
+          <img class="featured-image" src="{{ noticia.imagen_portada.display_url }}" alt="{{ noticia.titulo }}">
+          {% else %}
+          <img class="featured-image" src="{% static 'images/hero_1.jpg' %}" alt="{{ noticia.titulo }}">
+          {% endif %}
+          <span class="featured-scrim"></span>
+          <span class="featured-content">
+            <span class="eyebrow"><i class="bi bi-stars"></i> EN PORTADA</span>
+            <span class="featured-category">{{ noticia.categoria.nombre|default:"Comunidad Canaco" }}</span>
+            <strong>{{ noticia.titulo }}</strong>
+            <span class="featured-summary">{{ noticia.resumen|truncatewords:24 }}</span>
+            <span class="featured-meta">{{ noticia.createdat|date:"d M Y" }} <i class="bi bi-arrow-up-right"></i></span>
+          </span>
+        </a>
+        {% endwith %}
+        <div class="featured-aside">
+          <div class="featured-aside-heading"><span>EN CONVERSACIÓN</span><i class="bi bi-arrow-down-right"></i></div>
+          {% for noticia in slider %}
+            {% if not forloop.first %}
+            <a class="mini-story" href="{% url 'home:noticia_detalle' noticia.id %}">
+              <span class="mini-story-number">0{{ forloop.counter }}</span>
+              <span class="mini-story-copy">
+                <small>{{ noticia.categoria.nombre|default:"Comunidad" }} · {{ noticia.createdat|date:"d M" }}</small>
+                <strong>{{ noticia.titulo }}</strong>
+                <span>Leer historia <i class="bi bi-arrow-up-right"></i></span>
+              </span>
             </a>
-            <div class="excerpt">
-              <h2><a href="{% url 'home:noticia_detalle' publicacion.id %}">{{ publicacion.titulo }}</a></h2>
-              <div class="post-meta align-items-center text-left clearfix">
-                <span>{{ publicacion.createdat|date:"d/m/Y" }}</span>
-                <span>&nbsp;-&nbsp;{{ publicacion.categoria.nombre|default:"Sin categoría" }}</span>
-              </div>
-              <p>{{ publicacion.resumen }}</p>
-              <p><a href="{% url 'home:noticia_detalle' publicacion.id %}" class="read-more">Saber más</a></p>
-              <small>Visitas: {{ publicacion.visitas }}</small>
-            </div>
+            {% endif %}
+          {% endfor %}
+          {% if slider|length < 2 %}
+          <div class="featured-aside-note">
+            <span class="aside-note-icon"><i class="bi bi-lightbulb"></i></span>
+            <p>Ideas, iniciativas y voces que fortalecen a nuestra comunidad empresarial.</p>
+            <a href="{% url 'home:categoria' %}">Explora las noticias <i class="bi bi-arrow-right"></i></a>
           </div>
+          {% endif %}
+          <a class="all-news-link" href="{% url 'home:categoria' %}">Descubrir todas las noticias <i class="bi bi-arrow-up-right"></i></a>
         </div>
-      {% empty %}
-        <div class="col-12">
-          <p>No hay noticias publicadas todavía.</p>
-        </div>
-      {% endfor %}
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+  {% else %}
+  <section class="empty-feature">
+    <div class="container">
+      <div class="empty-feature-content">
+        <span class="eyebrow">CANACO · COMUNIDAD EMPRESARIAL</span>
+        <h2>Un lugar para las ideas<br>que hacen crecer.</h2>
+        <p>Aún no hay noticias publicadas. Vuelve pronto para conocer lo que pasa en nuestra comunidad.</p>
+        <a href="{% url 'home:categoria' %}" class="button-dark">Explorar noticias <i class="bi bi-arrow-up-right"></i></a>
+      </div>
+      <div class="empty-feature-art"><i class="bi bi-buildings"></i><span>CRECER<br>EN COMUNIDAD</span></div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="latest-section">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">LO NUEVO</span><h2>Historias recientes<span>.</span></h2></div>
+        <a class="text-link" href="{% url 'home:categoria' %}">Ver todas las noticias <i class="bi bi-arrow-up-right"></i></a>
+      </div>
+      <div class="story-grid">
+        {% for publicacion in publicaciones %}
+        {% if forloop.counter > 1 %}
+        <article class="story-card">
+          <a class="story-card-image" href="{% url 'home:noticia_detalle' publicacion.id %}">
+            {% if publicacion.imagen_portada %}
+            <img src="{{ publicacion.imagen_portada.display_url }}" alt="{{ publicacion.titulo }}" loading="lazy">
+            {% else %}
+            <img src="{% static 'images/img_1_horizontal.jpg' %}" alt="{{ publicacion.titulo }}" loading="lazy">
+            {% endif %}
+            <span class="story-card-arrow"><i class="bi bi-arrow-up-right"></i></span>
+          </a>
+          <div class="story-card-body">
+            <div class="story-card-meta"><span>{{ publicacion.categoria.nombre|default:"Comunidad" }}</span><span>{{ publicacion.createdat|date:"d M Y" }}</span></div>
+            <h3><a href="{% url 'home:noticia_detalle' publicacion.id %}">{{ publicacion.titulo }}</a></h3>
+            <p>{{ publicacion.resumen|truncatewords:22 }}</p>
+            <a class="story-read-more" href="{% url 'home:noticia_detalle' publicacion.id %}">Leer noticia <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </article>
+        {% endif %}
+        {% empty %}
+        <div class="story-empty"><i class="bi bi-journal-text"></i><p>Las nuevas historias aparecerán aquí.</p></div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="community-strip">
+    <div class="container">
+      <span class="community-icon"><i class="bi bi-people"></i></span>
+      <div><span class="eyebrow">JUNTOS LLEGAMOS MÁS LEJOS</span><h2>Las buenas ideas crecen cuando se comparten.</h2></div>
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'home:perfil' %}" class="button-light">Ir a mi espacio <i class="bi bi-arrow-up-right"></i></a>
+      {% else %}
+      <a href="{% url 'home:sign_up' %}" class="button-light">Forma parte <i class="bi bi-arrow-up-right"></i></a>
+      {% endif %}
+    </div>
+  </section>
+</main>
 {% endblock content %}

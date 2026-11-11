@@ -1,58 +1,46 @@
-{% load static %}
-<div class="site-mobile-menu site-navbar-target">
-        <div class="site-mobile-menu-header">
-            <div class="site-mobile-menu-close">
-                <span class="icofont-close js-menu-toggle"></span>
-            </div>
+{% with current=request.resolver_match.url_name %}
+<header class="site-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="brand-lockup" href="{% url 'home:index' %}" aria-label="Canaco, inicio">
+        <span class="brand-mark"><i class="bi bi-buildings"></i></span>
+        <span class="brand-name">canaco<span>.</span><small>COMUNIDAD EMPRESARIAL</small></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Abrir menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavigation">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item">
+            <a class="nav-link {% if current == 'index' %}active{% endif %}" href="{% url 'home:index' %}">Inicio</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if current == 'categoria' or current == 'categoria_detalle' %}active{% endif %}" href="{% url 'home:categoria' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Noticias</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'home:categoria' %}">Todas las noticias</a></li>
+              {% for categoria in categorias_menu %}
+              <li><a class="dropdown-item" href="{% url 'home:categoria_detalle' categoria.id %}">{{ categoria.nombre }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% if request.user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link {% if current == 'perfil' %}active{% endif %}" href="{% url 'home:perfil' %}">Mi espacio</a></li>
+          {% endif %}
+        </ul>
+        <div class="header-actions">
+          {% if request.user.is_authenticated %}
+          <span class="header-greeting">Hola, {{ request.user.first_name|default:request.user.username }}</span>
+          <form method="post" action="{% url 'home:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-header">Salir <i class="bi bi-arrow-up-right"></i></button>
+          </form>
+          {% else %}
+          <a class="header-login" href="{% url 'home:login' %}">Iniciar sesión</a>
+          <a class="btn btn-header" href="{% url 'home:sign_up' %}">Únete a Canaco <i class="bi bi-arrow-up-right"></i></a>
+          {% endif %}
         </div>
-        <div class="site-mobile-menu-body"></div>
-    </div><nav class="site-nav">
- <div class="container">
- <div class="menu-bg-wrap">
- <div class="site-navigation">
- <a href="{% url 'home:index' %}" class="logo m-0">Canaco<span class="text-primary">.</span></a>
- <div class="site-navigation-center text-center">
- <form action="#" class="search-form d-inline-block d-lg-none">
- <input type="text" class="form-control" placeholder="Buscar...">
- <span class="bi-search"></span>
- </form>
- <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu mx-auto">
- <li class="active"><a href="{% url 'home:index' %}">Inicio</a></li>
- <li class="has-children">
- <a href="#">Categoría</a>
- <ul class="dropdown">
- <li><a href="{% url 'home:categoria' %}">Todas</a></li>
- {% for categoria in categorias_menu %}
- <li><a href="{% url 'home:categoria' %}?categoria={{ categoria.id }}">{{ categoria.nombre }}</a></li>
- {% endfor %}
- </ul>
- </li>
- {% if request.user.is_authenticated %}
- <li><a href="{% url 'home:perfil' %}">Perfil</a></li>
- {% endif %}
- </ul>
- </div>
- <div class="site-navigation-actions">
- <a href="#" class="burger ms-auto site-menu-toggle js-menu-toggle d-inline-block d-lg-none light">
- <span></span>
- </a>
- {% if request.user.is_authenticated %}
- <div class="d-none d-lg-flex align-items-center justify-content-end gap-2">
- <a href="{% url 'home:perfil' %}" class="text-white">Mi Perfil</a>
- <form method="post" action="{% url 'home:logout' %}">
- {% csrf_token %}
- <button type="submit" class="btn btn-sm btn-outline-light">Cerrar
-sesión</button>
- </form>
- </div>
- {% else %}
- <div class="d-none d-lg-flex align-items-center justify-content-end gap-2">
- <a href="{% url 'home:login' %}" class="text-white">Iniciar sesión</a>
- <a href="{% url 'home:sign_up' %}" class="btn btn-sm btn-outline-light">Registro</a>
- </div>
- {% endif %}
- </div>
- </div>
- </div>
- </div>
- </nav> 
+      </div>
+    </div>
+  </nav>
+</header>
+{% endwith %}
