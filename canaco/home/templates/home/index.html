@@ -17,23 +17,39 @@
   <section class="featured-section">
     <div class="container">
       <div class="featured-layout">
-        {% with noticia=slider.0 %}
-        <a class="featured-story" href="{% url 'home:noticia_detalle' noticia.id %}">
-          {% if noticia.imagen_portada %}
-          <img class="featured-image" src="{{ noticia.imagen_portada.display_url }}" alt="{{ noticia.titulo }}">
-          {% else %}
-          <img class="featured-image" src="{% static 'images/hero_1.jpg' %}" alt="{{ noticia.titulo }}">
+        <div id="featuredCarousel" class="carousel slide carousel-fade featured-carousel" data-bs-ride="carousel" data-bs-interval="6000">
+          <div class="carousel-inner">
+            {% for noticia in slider %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <a class="featured-story" href="{% url 'home:noticia_detalle' noticia.id %}" aria-label="{{ noticia.titulo }}">
+                {% if noticia.imagen_portada %}
+                <img class="featured-image" src="{{ noticia.imagen_portada.display_url }}" alt="{{ noticia.titulo }}">
+                {% else %}
+                <img class="featured-image" src="{% static 'images/hero_1.jpg' %}" alt="{{ noticia.titulo }}">
+                {% endif %}
+                <span class="featured-scrim"></span>
+                <span class="featured-card-content">
+                  <h2 class="featured-card-title">{{ noticia.titulo }}</h2>
+                  <p class="featured-card-summary">{{ noticia.resumen|truncatewords:24 }}</p>
+                  <div class="featured-card-footer">
+                    <span class="featured-card-tag">{{ noticia.categoria.nombre|default:"Comunidad" }}</span>
+                    <span class="featured-card-date"><i class="bi bi-calendar3"></i> {{ noticia.createdat|date:"d M, Y" }}</span>
+                  </div>
+                </span>
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+
+          {% if slider|length > 1 %}
+          <button class="carousel-control-prev featured-arrow-btn prev-arrow" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev" aria-label="Noticia anterior">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <button class="carousel-control-next featured-arrow-btn next-arrow" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next" aria-label="Noticia siguiente">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
           {% endif %}
-          <span class="featured-scrim"></span>
-          <span class="featured-content">
-            <span class="eyebrow"><i class="bi bi-stars"></i> EN PORTADA</span>
-            <span class="featured-category">{{ noticia.categoria.nombre|default:"Comunidad Canaco" }}</span>
-            <strong>{{ noticia.titulo }}</strong>
-            <span class="featured-summary">{{ noticia.resumen|truncatewords:24 }}</span>
-            <span class="featured-meta">{{ noticia.createdat|date:"d M Y" }} <i class="bi bi-arrow-up-right"></i></span>
-          </span>
-        </a>
-        {% endwith %}
+        </div>
         <div class="featured-aside">
           <div class="featured-aside-heading"><span>EN CONVERSACIÓN</span><i class="bi bi-arrow-down-right"></i></div>
           {% for noticia in slider %}
@@ -118,5 +134,72 @@
       {% endif %}
     </div>
   </section>
+  <!-- ================= MODAL DE ANUNCIO / BIENVENIDA ================= -->
+  <div class="modal fade" id="modalIndex" tabindex="-1" aria-labelledby="modalIndexLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold" id="modalIndexLabel">¡Bienvenido a Canaco!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center pt-3 pb-4">
+          <i class="bi bi-megaphone-fill text-danger mb-3 d-block" style="font-size: 3rem;"></i>
+          <h4 class="fw-semibold">Últimas actualizaciones</h4>
+          <p class="text-muted mb-0">
+            Explora las noticias más recientes del sector tecnológico, empresarial y más. ¡No te pierdas nuestro contenido exclusivo!
+          </p>
+        </div>
+        <div class="modal-footer border-top-0 justify-content-center pt-0 pb-4">
+          <button type="button" class="btn btn-outline-secondary px-4 fw-semibold" data-bs-dismiss="modal">Quizás luego</button>
+          <a href="{% url 'home:categoria' %}" class="btn btn-danger px-4 fw-semibold">Ver Noticias</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- ================= FIN DEL MODAL ================= -->
+  <!-- Modal de bienvenida informativa -->
+  <div class="modal fade" id="modalBienvenida" tabindex="-1" aria-labelledby="modalBienvenidaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="modalBienvenidaLabel">Bienvenido a Canaco</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          Este es el sitio de noticias de la Cámara Nacional de Comercio. Aquí encontrarás los eventos realizados y los próximos a realizar.
+        </div>
+        <div class="modal-footer">
+          Cámara Nacional de Comercio
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
+
 {% endblock content %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.bootstrap?.Modal) return;
+
+  const modalIndexElement = document.getElementById("modalIndex");
+  const modalBienvenidaElement = document.getElementById("modalBienvenida");
+  const modalIndex = modalIndexElement
+    ? bootstrap.Modal.getOrCreateInstance(modalIndexElement)
+    : null;
+  const modalBienvenida = modalBienvenidaElement
+    ? bootstrap.Modal.getOrCreateInstance(modalBienvenidaElement)
+    : null;
+
+  if (modalIndex && modalBienvenida) {
+    modalIndexElement.addEventListener("hidden.bs.modal", function () {
+      modalBienvenida.show();
+    }, { once: true });
+    modalIndex.show();
+  } else if (modalIndex || modalBienvenida) {
+    (modalIndex || modalBienvenida).show();
+  }
+});
+</script>
+{% endblock extra_js %}

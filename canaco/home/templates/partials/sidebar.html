@@ -7,6 +7,7 @@
 <span>Mi Perfil</span>
 </a>
 </li>
+{% if request.user.is_staff or request.user.is_superuser %}
 <li>
 <a href="{% url 'home:crud_noticias' %}" class="nav-link panel-nav-link {% if current == 'crud_noticias' or current == 'crear_publicacion' or current == 'editar_publicacion' %}active{% endif %}">
 <span>Noticias</span>
@@ -27,6 +28,7 @@
 <span>Usuarios</span>
 </a>
 </li>
+{% endif %}
 <li>
 <a href="{% url 'home:crud_cambiar_contrasena' %}" class="nav-link panel-nav-link {% if current == 'crud_cambiar_contrasena' or current == 'crud_cambContra' %}active{% endif %}">
 <span>Cambiar<br>contraseña</span>

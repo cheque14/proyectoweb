@@ -46,6 +46,7 @@
         {% endif %}
         <section class="comments-section">
           <div class="article-section-heading"><span class="eyebrow">CONVERSACIÓN</span><h2>Comentarios <span>({{ comentarios|length }})</span></h2></div>
+          <div id="contenedor-comentarios">
           {% for comentario in comentarios %}
           <div class="comment-card">
             <div class="comment-card-meta"><strong>{{ comentario.user.username }}</strong><time datetime="{{ comentario.createdat|date:'c' }}">{{ comentario.createdat|date:"d M Y, H:i" }}</time></div>
@@ -54,12 +55,14 @@
           {% empty %}
           <p class="comments-empty">Sé la primera persona en compartir una idea.</p>
           {% endfor %}
+          </div>
           {% if request.user.is_authenticated %}
-          <form method="POST" class="comment-form">
+          <form id="form-comentario-ajax" class="comment-form" data-url="{% url 'home:agregar_comentario_ajax' publicacion.id %}">
             {% csrf_token %}
             <label for="contenido">Deja tu comentario</label>
             <textarea name="contenido" id="contenido" rows="4" class="form-control" placeholder="¿Qué opinas sobre esta noticia?" required></textarea>
-            <button type="submit" class="button-dark">Publicar comentario <i class="bi bi-arrow-up-right"></i></button>
+            <button type="submit" id="btn-comentar" class="button-dark">Publicar comentario <i class="bi bi-arrow-up-right"></i></button>
+            <p id="estado-comentario-ajax" class="comment-ajax-status" role="status" aria-live="polite" hidden></p>
           </form>
           {% else %}
           <div class="comment-signin"><span>¿Quieres participar en la conversación?</span><a href="{% url 'home:login' %}">Inicia sesión para comentar <i class="bi bi-arrow-right"></i></a></div>
@@ -87,4 +90,45 @@
     </div>
   </div>
 </main>
+<script>
+document.getElementById('form-comentario-ajax')?.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const input = form.elements.contenido;
+    const button = form.querySelector('button[type="submit"]');
+    const status = document.getElementById('estado-comentario-ajax');
+    const csrfToken = form.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+    status.hidden = true;
+    status.textContent = '';
+    status.classList.remove('text-danger');
+    button.disabled = true;
+
+    try {
+        const response = await fetch(form.dataset.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ contenido: input.value })
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.ok) {
+            throw new Error(data.error || 'No se pudo enviar el comentario.');
+        }
+
+        status.textContent = data.mensaje;
+        input.value = '';
+    } catch (error) {
+        status.textContent = error.message || 'Error de red al conectar con el servidor.';
+        status.classList.add('text-danger');
+    } finally {
+        status.hidden = false;
+        button.disabled = false;
+    }
+});
+</script>
 {% endblock content %}

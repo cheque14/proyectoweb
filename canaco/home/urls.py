@@ -60,6 +60,11 @@ urlpatterns = [
         views.eliminar_comentario,
         name="eliminar_comentario",
     ),
+    path(
+        "crud/comentarios/<int:pk>/eliminar-ajax/",
+        views.eliminar_comentario_ajax,
+        name="eliminar_comentario_ajax",
+    ),
     path("crud/noticias/", views.crud_noticias, name="crud_noticias"),
     path(
         "crud/noticias/<int:pk>/editar/",
@@ -92,5 +97,10 @@ urlpatterns = [
         "crud/usuarios/<int:user_id>/eliminar/",
         views.eliminar_usuario,
         name="eliminar_usuario",
+    ),
+    path(
+        "noticia/<int:pk>/comentar-ajax/",
+        views.agregar_comentario_ajax,
+        name="agregar_comentario_ajax",
     ),
 ]

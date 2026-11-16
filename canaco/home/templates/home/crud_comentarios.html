@@ -18,34 +18,34 @@
 </thead>
 <tbody>
 {% for comentario in comentarios %}
-<tr>
+<tr id="comentario-row-{{ comentario.id }}">
 <td>{{ comentario.user.username }}</td>
 <td>{{ comentario.publicacion.titulo }}</td>
 <td>{{ comentario.createdat|date:"Y-m-d H:i" }}</td>
 <td>{{ comentario.contenido }}</td>
 <td>
 {% if comentario.estado == 'aprobado' %}
-<span class="badge bg-success">Aprobado</span>
+<span class="badge bg-success estado-comentario">Aprobado</span>
 {% elif comentario.estado == 'bloqueado' %}
-<span class="badge bg-danger">Bloqueado</span>
+<span class="badge bg-danger estado-comentario">Bloqueado</span>
 {% else %}
-<span class="badge bg-warning text-dark">Pendiente</span>
+<span class="badge bg-warning text-dark estado-comentario">Pendiente</span>
 {% endif %}
 </td>
 <td>
-<form method="post" action="{% url 'home:aprobar_comentario' comentario.id %}">
+<form method="post" class="form-estado-comentario-ajax" data-estado="aprobado" action="{% url 'home:aprobar_comentario' comentario.id %}">
 {% csrf_token %}
 <button type="submit" class="btn btn-success btn-sm">Aprobar</button>
 </form>
 </td>
 <td>
-<form method="post" action="{% url 'home:bloquear_comentario' comentario.id %}">
+<form method="post" class="form-estado-comentario-ajax" data-estado="bloqueado" action="{% url 'home:bloquear_comentario' comentario.id %}">
 {% csrf_token %}
 <button type="submit" class="btn btn-warning btn-sm">Bloquear</button>
 </form>
 </td>
 <td>
-<form method="post" action="{% url 'home:eliminar_comentario' comentario.id %}">
+<form method="post" class="form-eliminar-comentario-ajax" action="{% url 'home:eliminar_comentario_ajax' comentario.id %}">
 {% csrf_token %}
 <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
 </form>
@@ -53,9 +53,66 @@
 </tr>
 {% empty %}
 <tr><td colspan="8" class="text-center">No hay comentarios.</td></tr>
+
 {% endfor %}
 </tbody>
 </table>
 </div>
 </div>
+<script>
+document.querySelectorAll('.form-estado-comentario-ajax').forEach(form => {
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const button = form.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || 'No se pudo actualizar el comentario.');
+            }
+
+            const badge = form.closest('tr')?.querySelector('.estado-comentario');
+            badge.className = 'badge estado-comentario ' + (data.estado === 'aprobado' ? 'bg-success' : 'bg-danger');
+            badge.textContent = data.estado === 'aprobado' ? 'Aprobado' : 'Bloqueado';
+        } catch (error) {
+            window.alert(error.message || 'Error de red al conectar con el servidor.');
+            button.disabled = false;
+        }
+    });
+});
+
+document.querySelectorAll('.form-eliminar-comentario-ajax').forEach(form => {
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!window.confirm('¿Seguro que deseas eliminar este comentario?')) return;
+
+        const button = form.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || 'No se pudo eliminar el comentario.');
+            }
+            form.closest('tr')?.remove();
+        } catch (error) {
+            window.alert(error.message || 'Error de red al conectar con el servidor.');
+            button.disabled = false;
+        }
+    });
+});
+</script>
 {% endblock content %}

@@ -1,16 +1,17 @@
 from functools import wraps
+import json
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.validators import validate_email
 from django.db import transaction
 from django.db.models import F
-from django.core.exceptions import PermissionDenied
-from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .models import (
     Archivo,
@@ -695,6 +696,8 @@ def aprobar_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     comentario.estado = Comentario.ESTADO_APROBADO
     comentario.save(update_fields=['estado', 'updatedat'])
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True, 'estado': comentario.estado})
     messages.success(request, 'Comentario aprobado.')
     return redirect('home:crud_comentarios')
 
@@ -705,6 +708,8 @@ def bloquear_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     comentario.estado = Comentario.ESTADO_BLOQUEADO
     comentario.save(update_fields=['estado', 'updatedat'])
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True, 'estado': comentario.estado})
     messages.success(request, 'Comentario bloqueado.')
     return redirect('home:crud_comentarios')
 
@@ -721,3 +726,47 @@ def eliminar_comentario(request, pk):
 @login_required(login_url="home:login")
 def contactanos(request):
     return render(request, 'home/contactanos.html')
+
+@require_POST
+def agregar_comentario_ajax(request, pk):
+    if request.headers.get('X-Requested-With') != 'XMLHttpRequest':
+        return JsonResponse({'ok': False, 'error': 'Petición no válida.'}, status=400)
+    if not request.user.is_authenticated:
+        return JsonResponse({'ok': False, 'error': 'Inicia sesión para comentar.'}, status=401)
+
+    publicacion = get_object_or_404(
+        Publicacion,
+        pk=pk,
+        estado=Publicacion.ESTADO_PUBLICADO,
+    )
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse({'ok': False, 'error': 'El contenido enviado no es válido.'}, status=400)
+
+    if not isinstance(data, dict):
+        return JsonResponse({'ok': False, 'error': 'El contenido enviado no es válido.'}, status=400)
+    texto = data.get('contenido', '')
+    if not isinstance(texto, str) or not texto.strip():
+        return JsonResponse({'ok': False, 'error': 'Escribe un comentario antes de enviar.'}, status=400)
+
+    comentario = Comentario.objects.create(
+        publicacion=publicacion,
+        user=request.user,
+        contenido=texto.strip(),
+    )
+    return JsonResponse({
+        'ok': True,
+        'id': comentario.id,
+        'mensaje': 'Comentario enviado. Será visible cuando lo apruebe un administrador.',
+    })
+
+
+@operador_required
+@require_POST
+def eliminar_comentario_ajax(request, pk):
+    if request.headers.get('X-Requested-With') != 'XMLHttpRequest':
+        return JsonResponse({'ok': False, 'error': 'Petición no válida.'}, status=400)
+    comentario = get_object_or_404(Comentario, pk=pk)
+    comentario.delete()
+    return JsonResponse({'ok': True})
