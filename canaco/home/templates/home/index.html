@@ -28,19 +28,17 @@
                 <img class="featured-image" src="{% static 'images/hero_1.jpg' %}" alt="{{ noticia.titulo }}">
                 {% endif %}
                 <span class="featured-scrim"></span>
-                <span class="featured-card-content">
-                  <h2 class="featured-card-title">{{ noticia.titulo }}</h2>
-                  <p class="featured-card-summary">{{ noticia.resumen|truncatewords:24 }}</p>
-                  <div class="featured-card-footer">
-                    <span class="featured-card-tag">{{ noticia.categoria.nombre|default:"Comunidad" }}</span>
-                    <span class="featured-card-date"><i class="bi bi-calendar3"></i> {{ noticia.createdat|date:"d M, Y" }}</span>
-                  </div>
+                <span class="featured-content">
+                  <span class="eyebrow"><i class="bi bi-stars"></i> EN PORTADA</span>
+                  <span class="featured-category">{{ noticia.categoria.nombre|default:"Comunidad Canaco" }}</span>
+                  <strong>{{ noticia.titulo }}</strong>
+                  <span class="featured-summary">{{ noticia.resumen|truncatewords:24 }}</span>
+                  <span class="featured-meta">{{ noticia.createdat|date:"d M Y" }} <i class="bi bi-arrow-up-right"></i></span>
                 </span>
               </a>
             </div>
             {% endfor %}
           </div>
-
           {% if slider|length > 1 %}
           <button class="carousel-control-prev featured-arrow-btn prev-arrow" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev" aria-label="Noticia anterior">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
@@ -183,6 +181,13 @@
 document.addEventListener("DOMContentLoaded", function () {
   if (!window.bootstrap?.Modal) return;
 
+  const modalsVistosKey = "canaco-modales-bienvenida-vistos";
+  try {
+    if (window.localStorage.getItem(modalsVistosKey) === "true") return;
+  } catch (error) {
+    // Si el almacenamiento está bloqueado, los modales siguen funcionando en esta visita.
+  }
+
   const modalIndexElement = document.getElementById("modalIndex");
   const modalBienvenidaElement = document.getElementById("modalBienvenida");
   const modalIndex = modalIndexElement
@@ -191,14 +196,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const modalBienvenida = modalBienvenidaElement
     ? bootstrap.Modal.getOrCreateInstance(modalBienvenidaElement)
     : null;
+  const marcarModalesComoVistos = function () {
+    try {
+      window.localStorage.setItem(modalsVistosKey, "true");
+    } catch (error) {
+      // El sitio permanece usable aunque el navegador no permita guardar la preferencia.
+    }
+  };
 
   if (modalIndex && modalBienvenida) {
     modalIndexElement.addEventListener("hidden.bs.modal", function () {
+      modalBienvenidaElement.addEventListener("hidden.bs.modal", marcarModalesComoVistos, { once: true });
       modalBienvenida.show();
     }, { once: true });
     modalIndex.show();
   } else if (modalIndex || modalBienvenida) {
-    (modalIndex || modalBienvenida).show();
+    const modalDisponible = modalIndexElement || modalBienvenidaElement;
+    const instanciaDisponible = modalIndex || modalBienvenida;
+    modalDisponible.addEventListener("hidden.bs.modal", marcarModalesComoVistos, { once: true });
+    instanciaDisponible.show();
   }
 });
 </script>
