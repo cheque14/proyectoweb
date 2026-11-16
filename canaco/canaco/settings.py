@@ -16,40 +16,45 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env_path = BASE_DIR.parent / '.envlocal'
+if env_path.exists():
+    for line in env_path.read_text(encoding='utf-8').splitlines():
+        line = line.strip()
+        if line and not line.startswith('#') and '=' in line:
+            key, value = line.split('=', 1)
+            os.environ.setdefault(key.strip(), value.strip())
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-clave-local-desarrollo-12345')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get(
-        'ALLOWED_HOSTS',
-        'localhost,127.0.0.1,0.0.0.0,[::1],9.160.39.66,'
-        'canacoweb.belgiumcentral.cloudapp.azure.com,'
-        'www.canacoweb.belgiumcentral.cloudapp.azure.com',
-    ).split(',')
-    if host.strip()
+    host.strip() for host in os.environ.get(
+        'ALLOWED_HOSTS', 'canacoweb.me,www.canacoweb.me'
+    ).split(',') if host.strip()
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get(
-        'CSRF_TRUSTED_ORIGINS',
-        'http://localhost:8000,http://127.0.0.1:8000,'
-        'http://9.160.39.66,'
-        'http://canacoweb.belgiumcentral.cloudapp.azure.com,'
-        'http://www.canacoweb.belgiumcentral.cloudapp.azure.com,'
-        'https://canacoweb.belgiumcentral.cloudapp.azure.com,'
-        'https://www.canacoweb.belgiumcentral.cloudapp.azure.com',
-    ).split(',')
-    if origin.strip()
-]
+if DEBUG:
+    for local_host in ('127.0.0.1', 'localhost'):
+        if local_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(local_host)
+
+# Obligatorio en Django 4+ y 5+ para iniciar sesión y enviar formularios por HTTPS
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.environ.get(
+    'CSRF_TRUSTED_ORIGINS', 'https://canacoweb.me,https://www.canacoweb.me'
+).split(',') if origin.strip()]
+
+# Permite que Django detecte correctamente el protocolo HTTPS detrás de Nginx
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', str(not DEBUG)).lower() == 'true'
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', str(not DEBUG)).lower() == 'true'
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', str(not DEBUG)).lower() == 'true'
 
 
 # Application definition
@@ -155,8 +160,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media' 
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 LOGIN_URL = 'home:login'
 LOGIN_REDIRECT_URL = 'home:index'
