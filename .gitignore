@@ -1,4 +1,10 @@
 .env
+.envlocal
+docker-compose.override.yml
 canaco_env/
 **/__pycache__/
 *.py[cod]
+canaco/media/
+canaco/staticfiles/
+__pycache__/
+*.pyc

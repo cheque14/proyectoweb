@@ -3,3 +3,6 @@
 canaco_env/
 **/__pycache__/
 *.py[cod]
+canaco/db.sqlite3
+canaco/media/
+canaco/staticfiles/

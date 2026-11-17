@@ -4,3 +4,4 @@ mysqlclient== 2.2.8
 asgiref == 3.12.1
 sqlparse == 0.6.0
 tzdata == 2026.4
+gunicorn==23.0.0

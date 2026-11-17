@@ -916,6 +916,33 @@ img {
   margin-left: 5px;
 }
 
+.footer-social {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.footer-social a {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 50%;
+  color: rgba(255,255,255,.82);
+  font-size: 16px;
+  text-decoration: none;
+  transition: color .2s ease, background-color .2s ease, border-color .2s ease;
+}
+
+.footer-social a:hover,
+.footer-social a:focus-visible {
+  border-color: var(--lime);
+  color: var(--forest-deep);
+  background: var(--lime);
+}
+
 .footer-links {
   display: flex;
   align-items: flex-start;

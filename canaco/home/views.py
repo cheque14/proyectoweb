@@ -34,7 +34,11 @@ def operador_required(view_func):
     @wraps(view_func)
     def wrapped_view(request, *args, **kwargs):
         if not es_operador(request.user):
-            raise PermissionDenied
+            messages.warning(
+                request,
+                'Este módulo requiere una cuenta con permisos de editor o administrador. Inicia sesión con esa cuenta para continuar.',
+            )
+            return redirect('home:login')
         return view_func(request, *args, **kwargs)
 
     return wrapped_view
