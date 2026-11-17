@@ -136,7 +136,12 @@ def politica_privacidad(request):
 
 @login_required(login_url="home:login")
 def perfil(request):
-    return render(request, 'home/perfil.html')
+    perfil_usuario, _ = Perfil.objects.get_or_create(user=request.user)
+    return render(
+        request,
+        'home/perfil.html',
+        {'perfil_usuario': perfil_usuario},
+    )
 
 
 @login_required(login_url="home:login")

@@ -1859,6 +1859,11 @@ img {
   font-weight: 700;
 }
 
+.profile-photo-help {
+  color: #78867d;
+  font-size: 12px;
+}
+
 .account-page {
   display: flex;
   min-height: 66vh;
@@ -2060,6 +2065,12 @@ img {
 .contact-link-card > span:last-child i {
   flex: 0 0 auto;
   color: var(--forest);
+}
+
+@media (min-width: 992px) {
+  .site-header .navbar-toggler {
+    display: none;
+  }
 }
 
 @media (max-width: 991.98px) {

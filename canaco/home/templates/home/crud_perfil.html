@@ -16,11 +16,9 @@
 {% endif %}
 <div class="profile-photo-wrap mb-4">
 {% if perfil_usuario.foto_perfil %}
-<img src="{{ perfil_usuario.foto_perfil.display_url }}" alt="Foto de perfil" class="profile-photo
-profile-photo-sm">
+<img src="{{ perfil_usuario.foto_perfil.display_url }}" alt="Foto de perfil" class="profile-photo profile-photo-sm">
 {% else %}
-<img src="{% static 'uploads/profile-default.jpg' %}" alt="Foto de perfil" class="profile-photo
-profile-photo-sm">
+<img src="{% static 'uploads/profile-default.jpg' %}" alt="Foto de perfil" class="profile-photo profile-photo-sm">
 {% endif %}
 </div>
 <form method="POST" enctype="multipart/form-data" class="profile-edit-form">
@@ -47,8 +45,9 @@ required>
 <input type="text" id="apellido_materno" name="apellido_materno" value="{{ perfil_usuario.apellido_materno }}">
 </div>
 <div class="profile-form-row">
-<label for="foto">Foto</label>
-<input type="file" id="foto" name="foto">
+<label for="foto">Foto de perfil</label>
+<input type="file" id="foto" name="foto" accept="image/*">
+<small class="profile-photo-help">Selecciona una imagen para que aparezca también en tu perfil.</small>
 </div>
 <div class="profile-form-actions">
 <button type="submit" class="btn btn-primary">Guardar cambios</button>

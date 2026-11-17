@@ -15,7 +15,11 @@
     {% endif %}
     <div class="profile-card">
         <div class="profile-photo-wrap">
+            {% if perfil_usuario.foto_perfil %}
+            <img src="{{ perfil_usuario.foto_perfil.display_url }}" alt="Foto de perfil de {{ request.user.username }}" class="profile-photo">
+            {% else %}
             <img src="{% static 'uploads/profile-default.jpg' %}" alt="Foto de perfil" class="profile-photo">
+            {% endif %}
         </div>
         <div class="profile-grid">
             <div class="profile-field">
