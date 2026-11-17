@@ -1,0 +1,106 @@
+<section class="cookie-consent" id="cookieConsent" role="region" aria-live="polite" aria-labelledby="cookieConsentTitle" hidden>
+  <div class="cookie-consent-copy">
+    <h2 id="cookieConsentTitle">Tu privacidad importa</h2>
+    <p>
+      Usamos cookies necesarias para que el sitio funcione y, si lo autorizas, cookies opcionales de Google Analytics para conocer el uso del sitio. Puedes aceptar o rechazar las cookies opcionales. Consulta nuestro <a href="{% url 'home:privacidad' %}">aviso de privacidad</a>.
+    </p>
+  </div>
+  <div class="cookie-consent-actions">
+    <button class="cookie-consent-button cookie-consent-reject" id="rejectAnalytics" data-cookie-choice="rejected" type="button">Rechazar cookies</button>
+    <button class="cookie-consent-button cookie-consent-accept" id="acceptAnalytics" data-cookie-choice="accepted" type="button">Aceptar cookies</button>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const consentKey = "canaco-analytics-consent";
+    const measurementId = "G-3L78TXLJ7J";
+    const banner = document.getElementById("cookieConsent");
+    const acceptButton = document.getElementById("acceptAnalytics");
+    const preferenceStatus = document.getElementById("cookiePreferenceStatus");
+
+    function loadAnalytics() {
+      delete window["ga-disable-" + measurementId];
+      if (window.__canacoAnalyticsLoaded) return;
+      window.__canacoAnalyticsLoaded = true;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag("js", new Date());
+      window.gtag("config", measurementId);
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = "https://www.googletagmanager.com/gtag/js?id=" + measurementId;
+      document.head.appendChild(script);
+    }
+
+    function disableAnalytics() {
+      window["ga-disable-" + measurementId] = true;
+      document.cookie.split(";").forEach(function (cookie) {
+        const cookieName = cookie.split("=")[0].trim();
+        if (cookieName !== "_ga" && !cookieName.startsWith("_ga_")) return;
+
+        document.cookie = cookieName + "=; Max-Age=0; path=/";
+        document.cookie = cookieName + "=; Max-Age=0; path=/; domain=" + window.location.hostname;
+        document.cookie = cookieName + "=; Max-Age=0; path=/; domain=." + window.location.hostname;
+      });
+    }
+
+    function updatePreferenceStatus(choice) {
+      if (!preferenceStatus) return;
+      if (choice === "accepted") {
+        preferenceStatus.textContent = "Aceptaste las cookies opcionales.";
+      } else if (choice === "rejected") {
+        preferenceStatus.textContent = "Rechazaste las cookies opcionales.";
+      } else {
+        preferenceStatus.textContent = "Todavía no has elegido tus preferencias.";
+      }
+    }
+
+    function saveChoice(choice) {
+      try {
+        window.localStorage.setItem(consentKey, choice);
+      } catch (error) {
+        // Si el navegador bloquea el almacenamiento, la elección rige durante esta página.
+      }
+      banner.hidden = true;
+      updatePreferenceStatus(choice);
+      if (choice === "accepted") {
+        loadAnalytics();
+      } else {
+        disableAnalytics();
+      }
+    }
+
+    let savedChoice = null;
+    try {
+      savedChoice = window.localStorage.getItem(consentKey);
+    } catch (error) {
+      // Si el navegador bloquea el almacenamiento, se vuelve a preguntar al visitar otra página.
+    }
+
+    if (savedChoice === "accepted") {
+      banner.hidden = true;
+      loadAnalytics();
+    } else if (savedChoice === "rejected") {
+      disableAnalytics();
+      banner.hidden = true;
+    } else {
+      banner.hidden = false;
+    }
+    updatePreferenceStatus(savedChoice);
+
+    document.querySelectorAll("[data-cookie-choice]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        saveChoice(button.getAttribute("data-cookie-choice"));
+      });
+    });
+
+    document.querySelectorAll("[data-cookie-settings]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        banner.hidden = false;
+        acceptButton.focus();
+      });
+    });
+  })();
+</script>

@@ -2,7 +2,6 @@
 <!doctype html>
 <html lang="es">
 <head>
- {% include 'partials/google_analytics.html' %}
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <link rel="shortcut icon" href="{% static 'favicon.png' %}">
@@ -22,6 +21,7 @@
  {% block content %}
  {% endblock content %}
  {% include 'partials/footer.html' %}
+ {% include 'partials/cookie_consent.html' %}
  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
  {% block extra_js %}{% endblock extra_js %}
 </body>
