@@ -1304,31 +1304,10 @@ img {
   font-size: 12px;
 }
 
-.byline-avatar {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  border-radius: 13px;
-  color: var(--lime);
-  background: var(--forest);
-  font-size: 18px;
-}
-
-.article-byline > span:nth-child(2) {
+.article-published-date {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.article-byline strong {
-  color: var(--ink);
-  font-size: 12px;
-}
-
-.article-byline small {
-  color: #8a968e;
-  font-size: 10px;
+  align-items: center;
+  gap: 7px;
 }
 
 .article-views {

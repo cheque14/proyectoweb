@@ -20,8 +20,7 @@
       <h1>{{ publicacion.titulo }}</h1>
       <p class="article-deck">{{ publicacion.resumen }}</p>
       <div class="article-byline">
-        <span class="byline-avatar"><i class="bi bi-buildings"></i></span>
-        <span><strong>{% if publicacion.autor %}{{ publicacion.autor.get_full_name|default:publicacion.autor.username }}{% else %}Canaco{% endif %}</strong><small>{{ publicacion.createdat|date:"d M Y · H:i" }}</small></span>
+        <span class="article-published-date"><i class="bi bi-calendar3" aria-hidden="true"></i>{{ publicacion.createdat|date:"d M Y · H:i" }}</span>
         <span class="article-views"><i class="bi bi-eye"></i> {{ publicacion.visitas }} visitas</span>
       </div>
     </header>
