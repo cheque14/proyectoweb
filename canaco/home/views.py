@@ -130,7 +130,9 @@ def sign_up(request):
         'Tu cuenta ha sido creada con éxito. Ahora puedes iniciar sesión.',
     )
     return redirect('home:login')
-
+    
+def politica_privacidad(request):
+    return render(request, 'home/privacidad.html')
 
 @login_required(login_url="home:login")
 def perfil(request):

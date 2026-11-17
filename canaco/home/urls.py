@@ -27,6 +27,7 @@ urlpatterns = [
         views.crear_publicacion,
         name="crear_publicacion",
     ),
+    path('privacidad/', views.politica_privacidad, name='privacidad'),
     path("crear-usuario/", views.crear_usuario, name="crear_usuario"),
     path(
         "crud/cambiar-contrasena/",
